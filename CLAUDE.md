@@ -4,8 +4,9 @@ A menu bar app captures my passing thoughts into `notes/YYYY-MM-DD.md` (one line
 
 ```
 app/                      the Swift menu bar app (./app/build.sh builds, installs to /Applications and relaunches it)
-notes/                    my notes; read-only for you
+notes/                    my notes; read-only for you (git-ignored, like reflections/)
 template/reflection.html  the reflection template, reused unchanged
+template/index.html       blank index, copied to reflections/ if that has none
 tools/stats.py            fills the template's numbers and rhythm chart
 reflections/              YYYY-MM-DD_<period>.html, plus index.html
 ```
@@ -48,7 +49,7 @@ Aim for about a five-minute read (~1000 words including quotes). A thin period g
 1. **Range.** Inclusive dates; it ends today unless I name a calendar period. Slugs: `30d`, `3m`, `1y`, `2026-09`, `2026-q3`. The output is `reflections/<today>_<slug>.html`; a rerun overwrites the file and its index entry.
 2. `cp template/reflection.html reflections/<file>.html`, then `python3 tools/stats.py START END reflections/<file>.html`.
 3. Replace the remaining `{{PLACEHOLDERS}}` without changing anything else in the file. An empty section (or question) is hidden automatically. Escape `& < >` in note text. At the end, `grep '{{'` should find nothing.
-4. Add the entry to `reflections/index.html` directly below the `ENTRIES` comment, then `open` the reflection.
+4. Add the entry to `reflections/index.html` (copy it from `template/index.html` if missing) directly below the `ENTRIES` comment, then `open` the reflection.
 
 | Placeholder | Content |
 |---|---|
