@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="{{LANG}}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reflection · {{PERIOD_LABEL}} · {{DATE}}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f8f5ef;
+    --ink: #1c1a17;
+    --muted: #6a645b;
+    --faint: #a19a8f;
+    --rule: #e4ded3;
+    --accent: #b5452a;
+    --accent-soft: #ecd3c8;
+    --serif: "Newsreader", ui-serif, "New York", Georgia, "Songti SC", serif;
+    --sans: system-ui, -apple-system, "Helvetica Neue", "PingFang SC", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #171615;
+      --ink: #ece7de;
+      --muted: #a39d93;
+      --faint: #6f6a62;
+      --rule: #2e2b28;
+      --accent: #e58a68;
+      --accent-soft: #4a2c22;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 400 20px/1.65 var(--serif);
+    font-optical-sizing: auto;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 40px; }
+  @media (max-width: 720px) { .wrap { padding: 0 20px; } body { font-size: 18px; } }
+
+  a { color: inherit; text-decoration-color: var(--faint); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  a:hover { color: var(--accent); text-decoration-color: currentColor; }
+  p { margin: 0 0 1em; }
+
+  /* ---------- Opening ---------- */
+  header { padding: 96px 0 0; }
+  .kicker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    align-items: baseline;
+    font: 600 13px/1 var(--sans);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 28px;
+  }
+  .kicker span + span { color: var(--faint); font-weight: 500; letter-spacing: 0.04em; text-transform: none; font-size: 14px; }
+  h1 {
+    font-size: clamp(42px, 6.4vw, 76px);
+    line-height: 1.02;
+    font-weight: 400;
+    letter-spacing: -0.025em;
+    margin: 0;
+    max-width: 15em;
+    text-wrap: balance;
+  }
+
+  .figures {
+    display: grid;
+    grid-template-columns: repeat(3, auto) 1fr;
+    gap: 0 56px;
+    margin: 64px 0 22px;
+    align-items: start;
+  }
+  .figure b {
+    display: block;
+    font: 300 52px/1 var(--serif);
+    letter-spacing: -0.02em;
+    font-variant-numeric: lining-nums tabular-nums;
+  }
+  .figure b span { color: var(--faint); }
+  .figure small { display: block; margin-top: 8px; font: 13px/1.3 var(--sans); color: var(--muted); }
+  @media (max-width: 720px) {
+    .figures { grid-template-columns: repeat(3, auto); gap: 0 28px; margin-top: 48px; }
+    .figure b { font-size: 38px; }
+  }
+
+  /* Notes per day (or per week for long ranges); height relative to the busiest */
+  .pulse {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 120px;
+    border-bottom: 1px solid var(--ink);
+  }
+  .pulse i {
+    flex: 1;
+    min-width: 1px;
+    height: calc(var(--h) * 100%);
+    background: var(--accent);
+    border-radius: 2px 2px 0 0;
+  }
+  .pulse i[style*="--h:0;"] { height: 3px; background: var(--rule); border-radius: 0; }
+  .axis {
+    display: flex;
+    justify-content: space-between;
+    font: 12px/1 var(--sans);
+    color: var(--faint);
+    margin-top: 10px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .summary {
+    font-size: 26px;
+    line-height: 1.5;
+    font-weight: 400;
+    margin: 72px 0 0;
+    max-width: 30em;
+  }
+  .summary p:last-child { margin: 0; }
+  @media (max-width: 720px) { .summary { font-size: 22px; } }
+
+  /* ---------- Sections: heading in the margin, text in the column ---------- */
+  .row {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 680px);
+    gap: 0 64px;
+    margin-top: 104px;
+  }
+  .row:has(> .content:empty) { display: none; }
+  .row > h2 {
+    font: 500 26px/1.2 var(--serif);
+    letter-spacing: -0.01em;
+    margin: 0;
+    padding-top: 18px;
+    border-top: 2px solid var(--ink);
+    align-self: start;
+    position: sticky;
+    top: 32px;
+  }
+  .row > .content { border-top: 1px solid var(--rule); padding-top: 18px; }
+  @media (max-width: 880px) {
+    .row { grid-template-columns: 1fr; margin-top: 80px; }
+    .row > h2 { position: static; padding-bottom: 6px; }
+    .row > .content { border-top: 0; padding-top: 10px; }
+  }
+
+  h3 {
+    font: 500 30px/1.15 var(--serif);
+    letter-spacing: -0.015em;
+    margin: 0 0 14px;
+  }
+  .content > div + div { margin-top: 64px; }
+
+  /* A quoted note */
+  .note {
+    margin: 20px 0;
+    padding: 2px 0 2px 20px;
+    border-left: 2px solid var(--accent-soft);
+  }
+  .note time {
+    display: block;
+    font: 600 11px/1.6 var(--sans);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--faint);
+    margin-bottom: 2px;
+  }
+
+  /* Theme: when it came up across the period */
+  .track { position: relative; height: 14px; margin: 0 0 6px; }
+  .track::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; border-top: 1px solid var(--rule); }
+  .track i {
+    position: absolute;
+    top: 50%;
+    width: 9px;
+    height: 9px;
+    margin: -4.5px 0 0 -4.5px;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0.75;
+  }
+  .span { font: 13px/1.5 var(--sans); color: var(--muted); margin: 0 0 18px; font-variant-numeric: tabular-nums; }
+
+  /* Resurfaced: earlier note, the gap, the later note */
+  .pair .note:first-child { color: var(--muted); }
+  .pair .gap {
+    display: block;
+    margin: -6px 0 -6px 0;
+    padding: 10px 0 10px 20px;
+    border-left: 2px dashed var(--rule);
+    font: 12px/1 var(--sans);
+    color: var(--faint);
+  }
+  .pair .note + .note, .pair .gap + .note { border-left-color: var(--accent); }
+  .pair .why { margin-top: 20px; }
+
+  /* Ideas: numbered */
+  .content:has(> .idea) { counter-reset: idea; }
+  .idea {
+    counter-increment: idea;
+    display: grid;
+    grid-template-columns: 56px minmax(0, 1fr);
+  }
+  .idea::before {
+    content: counter(idea);
+    font: 300 44px/0.8 var(--serif);
+    color: var(--accent);
+    grid-row: span 99;
+  }
+  .next {
+    font: 16px/1.55 var(--sans);
+    padding: 14px 18px;
+    background: color-mix(in srgb, var(--accent-soft) 45%, transparent);
+    border-radius: 4px;
+  }
+  .next b { color: var(--accent); font-weight: 600; margin-right: 6px; }
+
+  /* Open loops: open circles */
+  ul.plain { list-style: none; padding: 0; margin: 0; }
+  ul.plain > li { position: relative; padding-left: 34px; }
+  ul.plain > li + li { margin-top: 36px; }
+  ul.plain > li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 5px;
+    width: 12px;
+    height: 12px;
+    border: 1.5px solid var(--accent);
+    border-radius: 50%;
+  }
+  ul.plain .note { margin-top: 0; padding-left: 0; border-left: 0; }
+  ul.plain li > p:not(.note) { margin-top: -10px; color: var(--muted); }
+  ul.plain li > p:last-child { margin-bottom: 0; }
+
+  /* ---------- The question ---------- */
+  .question {
+    margin-top: 128px;
+    background: var(--ink);
+    color: var(--bg);
+    padding: 112px 0 120px;
+  }
+  .question:has(.content:empty) { display: none; }
+  .question .label {
+    font: 600 13px/1 var(--sans);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 32px;
+  }
+  .question .content > p:first-child {
+    font-size: clamp(32px, 4.4vw, 50px);
+    line-height: 1.15;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    max-width: 18em;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .question .context {
+    font: 16px/1.6 var(--sans);
+    opacity: 0.6;
+    max-width: 36em;
+    margin: 32px 0 0;
+  }
+
+  footer {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+    padding: 28px 0 56px;
+    font: 14px/1.5 var(--sans);
+    color: var(--faint);
+  }
+  footer a { color: var(--muted); }
+
+  @media print {
+    :root { --bg: #fff; }
+    .row > h2 { position: static; }
+    .question { background: none; color: var(--ink); padding: 0; }
+  }
+</style>
+</head>
+<body data-start="{{START_ISO}}" data-end="{{END_ISO}}">
+<main>
+  <div class="wrap">
+    <header>
+      <p class="kicker"><span>{{PERIOD_LABEL}}</span><span>{{RANGE_START}} – {{RANGE_END}}</span></p>
+      <h1>{{HEADLINE}}</h1>
+      <div class="figures">
+        <div class="figure"><b>{{NOTE_COUNT}}</b><small>notes</small></div>
+        <div class="figure"><b>{{ACTIVE_DAYS}}<span>/{{TOTAL_DAYS}}</span></b><small>days with notes</small></div>
+        <div class="figure"><b>{{LONGEST_GAP}}</b><small>longest gap in days</small></div>
+      </div>
+      <div class="pulse">{{PULSE}}</div>
+      <div class="axis"><span>{{AXIS_START}}</span><span>{{AXIS_END}}</span></div>
+      <div class="summary">{{SUMMARY}}</div>
+    </header>
+
+    <section class="row">
+      <h2>Themes</h2>
+      <div class="content">{{THEMES}}</div>
+    </section>
+
+    <section class="row">
+      <h2>Resurfaced</h2>
+      <div class="content">{{RESURFACED}}</div>
+    </section>
+
+    <section class="row">
+      <h2>Worth acting on</h2>
+      <div class="content">{{IDEAS}}</div>
+    </section>
+
+    <section class="row">
+      <h2>Open loops</h2>
+      <div class="content">{{OPEN_LOOPS}}</div>
+    </section>
+
+    <section class="row">
+      <h2>Since last time</h2>
+      <div class="content">{{CHANGES}}</div>
+    </section>
+  </div>
+
+  <section class="question">
+    <div class="wrap">
+      <p class="label">A question for you</p>
+      <div class="content">{{QUESTION}}</div>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <span>Written {{DATE}} · <a href="index.html">All reflections</a></span>
+  <span>{{PREVIOUS}}</span>
+</footer>
+
+<script>
+  const day = 864e5;
+  const start = new Date(document.body.dataset.start);
+  const span = Math.max(1, (new Date(document.body.dataset.end) - start) / day);
+
+  for (const track of document.querySelectorAll(".track[data-dates]")) {
+    for (const d of track.dataset.dates.trim().split(/\s+/)) {
+      const x = (new Date(d) - start) / day / span;
+      if (x < 0 || x > 1) continue;
+      const dot = document.createElement("i");
+      dot.style.left = `${x * 100}%`;
+      dot.title = d;
+      track.append(dot);
+    }
+  }
+
+  for (const pair of document.querySelectorAll(".pair")) {
+    const times = pair.querySelectorAll(".note time[datetime]");
+    if (times.length < 2) continue;
+    const days = Math.round((new Date(times[1].dateTime) - new Date(times[0].dateTime)) / day);
+    const gap = document.createElement("span");
+    gap.className = "gap";
+    gap.textContent = days >= 60 ? `${Math.round(days / 30.4)} months later`
+                    : days >= 14 ? `${Math.round(days / 7)} weeks later`
+                    : `${days} day${days === 1 ? "" : "s"} later`;
+    times[1].closest(".note").before(gap);
+  }
+</script>
+</body>
+</html>
